@@ -27,7 +27,14 @@ export HF_HOME="${HF_HOME:-$SCRIPT_DIR/models/huggingface}"
 export SENTENCE_TRANSFORMERS_HOME="${SENTENCE_TRANSFORMERS_HOME:-$SCRIPT_DIR/models}"
 export SENTENCE_TRANSFORMERS_DEVICE=cpu
 export HF_HUB_OFFLINE=1
-export VLLM_USE_V1=0   # V0 evita ABI mismatch en torch+cu124
+
+# VLLM_USE_V1=0 solo es necesario en x86_64 con torch+cu124 (ABI mismatch).
+# En aarch64 (DGX Spark) con vLLM moderno no hace falta.
+VLLM_V1_FLAG="${SCRIPT_DIR}/.vllm_v1_needed"
+if [ -f "$VLLM_V1_FLAG" ] && [ "$(cat "$VLLM_V1_FLAG")" = "1" ]; then
+    export VLLM_USE_V1=0
+    echo "VLLM_USE_V1=0 (x86_64 + cu124)"
+fi
 
 MODEL_ID="meta-llama/Llama-3.1-8B-Instruct"
 
