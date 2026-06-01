@@ -96,12 +96,12 @@ else
 fi
 
 # ── Resto de dependencias ─────────────────────────────────────────────────────
+# Nota: ragas y langchain NO se instalan aquí — solo son necesarios para
+# ragas_eval.py que ya se ejecutó en el DGX. En este servidor solo corre
+# context_cite_eval.py que solo necesita: vllm, transformers, sklearn, openai.
 echo ""
 echo "=== Instalando dependencias del proyecto ==="
 pip install --quiet \
-    ragas==0.4.3 \
-    langchain-openai \
-    langchain-community \
     sentence-transformers \
     chromadb \
     "scikit-learn>=1.3.0" \
@@ -120,10 +120,10 @@ echo "ARCH=$ARCH  VLLM_USE_V1=$VLLM_V1_NEEDED"
 echo ""
 echo "=== Verificación del stack ==="
 python -c "
-import torch, vllm, ragas, sklearn, openai
+import torch, vllm, sklearn, openai, transformers
 print(f'torch         {torch.__version__}  CUDA: {torch.cuda.is_available()}')
 print(f'vllm          {vllm.__version__}')
-print(f'ragas         {ragas.__version__}')
+print(f'transformers  {transformers.__version__}')
 print(f'scikit-learn  {sklearn.__version__}')
 print(f'openai        {openai.__version__}')
 "
