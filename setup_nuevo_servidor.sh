@@ -73,8 +73,16 @@ echo ""
 echo "=== Instalando vLLM ==="
 
 if [ "$ARCH" = "aarch64" ]; then
-    # aarch64 + CUDA 13: usar vLLM más reciente (tiene ruedas ARM desde v0.9+)
-    # No fijar versión — dejar que pip resuelva la última compatible con torch instalado
+    # aarch64 + CUDA 13: vLLM necesita compilar fastsafetensors (extensión C++).
+    # Requiere python3.12-dev. Intentamos instalar si falta.
+    echo "aarch64: verificando python3.12-dev (necesario para compilar vLLM deps)"
+    if ! dpkg -l python3.12-dev &>/dev/null 2>&1; then
+        echo "  Instalando python3.12-dev..."
+        sudo apt-get install -y python3.12-dev 2>/dev/null \
+            || { echo "  AVISO: no hay sudo o apt falló — intentando igualmente"; }
+    else
+        echo "  python3.12-dev ya instalado"
+    fi
     echo "aarch64: instalando vLLM sin pin de versión"
     pip install --quiet vllm
     VLLM_V1_NEEDED=0   # vLLM moderno usa V1 por defecto sin problemas en ARM
