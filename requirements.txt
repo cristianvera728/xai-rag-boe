@@ -1,0 +1,16 @@
+# XAI-RAG-AAPP — dependencias
+# pip install -r requirements.txt
+
+# BOE pipeline
+requests>=2.31.0
+chromadb>=0.5.0
+sentence-transformers>=3.0.0   # bge-m3
+
+# Evaluación
+ragas>=0.1.0
+openai>=1.0.0                  # RAGAS lo usa como LLM-judge
+# context-cite               # instalar desde: pip install git+https://github.com/MadryLab/context-cite
+
+# Utils
+tqdm>=4.66.0
+python-dotenv>=1.0.0
