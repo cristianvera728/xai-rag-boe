@@ -105,7 +105,7 @@ if [ $SMOKE -eq 1 ]; then
     echo "=== SMOKE TEST: 5 items, 16 ablaciones ==="
     python eval/context_cite_eval.py \
         --vllm-url      http://localhost:8000 \
-        --model         "$MODEL_ID" \
+        --model         "$VLLM_MODEL" \
         --answers       eval/rag_answers.json \
         --out           eval/context_cite_smoke.json \
         --num-ablations 16 \
@@ -116,7 +116,7 @@ else
     echo "=== EVALUACIÓN COMPLETA: 200 items, 64 ablaciones ==="
     python eval/context_cite_eval.py \
         --vllm-url      http://localhost:8000 \
-        --model         "$MODEL_ID" \
+        --model         "$VLLM_MODEL" \
         --answers       eval/rag_answers.json \
         --out           eval/context_cite_results.json \
         --num-ablations 64 \
