@@ -38,6 +38,18 @@ fi
 
 MODEL_ID="meta-llama/Llama-3.1-8B-Instruct"
 
+# Buscar el snapshot del modelo en el caché local (compatible con cache_dir y con HF_HOME/hub/).
+# Si se encuentra, pasar la ruta absoluta a vLLM para evitar problemas de HF_HOME vs cache_dir.
+MODEL_LOCAL=$(find "$SCRIPT_DIR/models" -name "config.json" -path "*Llama-3.1-8B*" 2>/dev/null \
+    | head -1 | xargs -I{} dirname {} 2>/dev/null || true)
+if [ -n "$MODEL_LOCAL" ] && [ -f "$MODEL_LOCAL/config.json" ]; then
+    VLLM_MODEL="$MODEL_LOCAL"
+    echo "Modelo local encontrado: $VLLM_MODEL"
+else
+    VLLM_MODEL="$MODEL_ID"
+    echo "Usando modelo HuggingFace ID: $VLLM_MODEL"
+fi
+
 # ── Verificar GPU ─────────────────────────────────────────────────────────────
 echo "=== GPU disponible ==="
 nvidia-smi --query-gpu=name,memory.total,driver_version --format=csv,noheader 2>/dev/null \
@@ -56,9 +68,9 @@ echo "rag_answers.json: $(python -c "import json; print(len(json.load(open('eval
 # ── Arrancar vLLM ─────────────────────────────────────────────────────────────
 mkdir -p logs
 echo ""
-echo "=== Arrancando vLLM (${MODEL_ID}) ==="
+echo "=== Arrancando vLLM (${VLLM_MODEL}) ==="
 python -m vllm.entrypoints.openai.api_server \
-    --model "$MODEL_ID" \
+    --model "$VLLM_MODEL" \
     --port 8000 \
     --tensor-parallel-size 1 \
     --dtype bfloat16 \
